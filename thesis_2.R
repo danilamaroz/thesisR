@@ -68,6 +68,13 @@ fcst.errs <- array(0, dim = c(5, 3, 8, T-40), dimnames = list(c("RW", "BVAR", "V
 #calculate SFEs for models and squared residuals errors
 # SFEs
 for (i in 1:4) {
-  fcst.errs[i, , , ] <- (fcst.results[i, , , ] - data0[41:T, dimnames])^2
+  for (ii in 1:3) {
+    for (iii in 1:8) {
+      for (iiii in 1:(T-40)){
+        fcst.errs[i, ii, iii, iiii] <- (fcst.results[i, ii, iii, iiii] - data0[40 + iiii, dimnames[ii]])^2
+      }
+    }
+  }
 }
+
 msfe.all <- apply(fcst.errs, c(1,2,3), mean) # check if correct!!!! returns mean over methods, variables and n.ahead forecasts
