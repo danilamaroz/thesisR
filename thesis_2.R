@@ -8,7 +8,7 @@ library(vars)
 library(forecast)
 library(MASS)
 data0 <- data[-1,]
-for (i in 3:ncol(data)) {
+for (i in 3:(ncol(data)-1)) {
   data0[, i] <- diff(log(data[, i]))
 }
 # data made stationary-like
