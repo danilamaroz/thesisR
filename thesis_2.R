@@ -78,3 +78,6 @@ for (i in 1:4) {
 }
 
 msfe.all <- apply(fcst.errs, c(1,2,3), mean) # check if correct!!!! returns mean over methods, variables and n.ahead forecasts
+
+save(msfe.all, file = "msfe.all.RData")
+save(fcst.errs, file = "fcst.errs.RData")

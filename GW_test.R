@@ -1,5 +1,7 @@
 load("macro1.RData")
 source("BVARBGR.R")
+require(vars)
+require(forecast)
 # data adjustment
 data <- data[, -21]
 data0 <- data[-1,]
@@ -15,6 +17,7 @@ dimnames = c("GNPK", "CPIIT", "X3MBOT")
 modelnames = c("RW", "BVAR", "VAR", "ARIMA", "empty")
 hnames = c("1p ahead", "2p ahead", "3p ahead", "4p ahead", "5p ahead", "6p ahead", "7p ahead", "8p ahead")
 fitted.errs <- array(0, dim = c(5, 3, 8, T-40, 20), dimnames = c(modelnames, dimnames, hnames, data0[41:T, 1], 1:30))
+fitted.errs2 <- array(0, dim = c(5, 3, 8, T-40, 20), dimnames = c(modelnames, dimnames, hnames, data0[41:T, 1], 1:30))
 # errors span from ones closer to the forecasting date to the ones further in time
 
 for (i in 1:3) {
@@ -41,7 +44,9 @@ for (ii in 1:8) {
 for (ii in 1:8) {
   for (iii in 1:(T-40)) {
     for (i in 1:3) {
-      fcst.VAR[i, ii, iii] <- predict(VAR(data0[(iii:(iii+40-ii)), c(3, 22, 23)], p = 5), n.ahead = 8)$fcst[[i]][ii, 1]
+      #fcst.VAR[i, ii, iii] <- predict(VAR(data0[(iii:(iii+40-ii)), c(3, 22, 23)], p = 5), n.ahead = 8)$fcst[[i]][ii, 1]
+      fitted.errs[3, i, ii, iii, ] <- VAR(data0[(iii:(iii+40-ii)), c(3, 22, 23)], p = 5)$varresult[[i]]$residuals[(41-ii-5):(41-ii-5-19)]
+      # test rev(VAR(data0[(20:56), c(3, 22, 23)], p = 5)$varresult[[2]]$residuals)[1:20] == fitted.errs[3, 2, 4, 20, ]
     }
   }
 }
@@ -49,7 +54,15 @@ for (ii in 1:8) {
 for (i in 1:3) {
   for (ii in 1:8) {
     for (iii in 1:(T-40)) {
-      fcst.ARMA[i, ii, iii] <- predict(auto.arima(data0[(iii:(iii+40-ii)), c(3, 22, 23)][, i]), n.ahead = 8)$pred[ii]
+      # fcst.ARMA[i, ii, iii] <- predict(auto.arima(data0[(iii:(iii+40-ii)), c(3, 22, 23)][, i]), n.ahead = 8)$pred[ii]
+      fitted.errs[4, i, ii, iii, ] <- rev(auto.arima(data0[(iii:(iii+40-ii)), c(3, 22, 23)][, i])$residuals)[1:20]
     }
   }
 }
+
+for (i in 1:4) {
+  # construction of the squared errors
+  fitted.errs2[i, , , , ] <- apply(fitted.errs[i, , , , ], c(1, 2, 3, 4), function(x) x^2)
+}
+
+save(fitted.errs2, file = "fitted.errs2.RData")
