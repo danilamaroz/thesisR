@@ -3,7 +3,7 @@ source("BVARBGR.R")
 require(vars)
 require(forecast)
 # data adjustment
-data <- data[, -21]
+data <- data[, c(-6, -20, -21)]
 data0 <- data[-1,]
 for (i in 3:(ncol(data)-1)) {
   data0[, i] <- diff(log(data[, i]))

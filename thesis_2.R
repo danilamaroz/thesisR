@@ -1,8 +1,8 @@
 #NOTES
-#the difference between the years is put in the t+1 cell (instead of t cell) !?
+#the difference between the years is put in the t+1 cell
 source("BVARBGR.R")
 load("macro1.RData")
-data <- data[, -21] #subtracting stat discrepancy
+data <- data[, c(-6, -20, -21)] #subtracting stat discrepancy and redundant variables
 library(lars)
 library(vars)
 library(forecast)
@@ -14,7 +14,7 @@ for (i in 3:(ncol(data)-1)) {
 # data made stationary-like
 # models
 # RW, BVAR, VAR, ARMA
-# figure out a simple DFM model??
+# figure out a simple DFM model????
 
 T = nrow(data0)
 m = ncol(data0)
